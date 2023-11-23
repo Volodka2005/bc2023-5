@@ -1,7 +1,7 @@
 {
 	"info": {
 		"_postman_id": "63557ab2-117f-44fb-8971-e51418bf899b",
-		"name": "colection.json",
+		"name": "collection.json",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "31082067"
 	},
@@ -50,24 +50,29 @@
 				"method": "POST",
 				"header": [],
 				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"note_name\": \"Vova\",\r\n    \"note\": \"2005\"\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "note_name",
+							"value": "Text",
+							"type": "text"
+						},
+						{
+							"key": "note",
+							"value": "123123",
+							"type": "text"
 						}
-					}
+					]
 				},
 				"url": {
-					"raw": "http://localhost:8000/upload/",
+					"raw": "http://localhost:8000/upload",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
 					"port": "8000",
 					"path": [
-						"upload",
-						""
+						"upload"
 					]
 				}
 			},
