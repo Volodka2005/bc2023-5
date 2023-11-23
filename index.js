@@ -10,7 +10,6 @@ const upload = multer();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true}));
 
-
 const notesFilePath = './notes.json';
 
 const readNotesFromFile = () => {
@@ -21,6 +20,10 @@ const readNotesFromFile = () => {
 const writeNotesToFile = (notes) => {
   fs.writeFileSync(notesFilePath, JSON.stringify(notes, null, 2), 'utf8');
 };
+
+app.get('/', (req, res) => {
+  res.send('Server is running');
+});
 
 app.get('/notes', (req, res) => {
   if (!fs.existsSync(notesFilePath)) {
@@ -33,42 +36,42 @@ app.get('/notes', (req, res) => {
 
 app.get('/UploadForm.html', (req, res) => {
   res.sendFile(__dirname + '/static/UploadForm.html');
-  });
+});
   
 
-  app.post('/upload', upload.single('note'), (req, res) => {
-    const note_name = req.body.note_name;
-    const note = req.body.note;
-    if (!note_name || !note) {
-    res.status(400).json({ error: 'Missing note_name or note field' });
-    return;
-    }
+app.post('/upload', upload.single('note'), (req, res) => {
+  const note_name = req.body.note_name;
+  const note = req.body.note;
+  if (!note_name || !note) {
+  res.status(400).json({ error: 'Missing note_name or note field' });
+  return;
+  }
     
-    let notes = [];
-    try {
-    const notesData = fs.readFileSync('notes.json', 'utf-8');
-    notes = JSON.parse(notesData);
-    } catch (err) {
-    res.status(500).json({ error: ' Server Error' });
-    }
+  let notes = [];
+  try {
+  const notesData = fs.readFileSync('notes.json', 'utf-8');
+  notes = JSON.parse(notesData);
+  } catch (err) {
+  res.status(500).json({ error: ' Server Error' });
+  }
 
-    const existingNote = notes.find((n) => n.note_name === note_name);
-    if (existingNote) {
-    res.status(400).json({ error: 'Note with the same name already exists' });
-    return;
-    }
-    notes.push({ note_name, note });
-    fs.writeFileSync('notes.json', JSON.stringify(notes, null, 2));
-    const formDataResponse = `
-    Content-Disposition: form-data; name=${note_name}
-    Content-Disposition: form-data; name=${note}
-    `;
-    res.set({
-    'Content-Type': `multipart/form-data; boundary=boundary`,
-    'Content-Length': Buffer.from(formDataResponse, 'utf-8').length
-    });
-    res.status(201).send(formDataResponse);
-    });
+  const existingNote = notes.find((n) => n.note_name === note_name);
+  if (existingNote) {
+  res.status(400).json({ error: 'Note with the same name already exists' });
+  return;
+  }
+  notes.push({ note_name, note });
+  fs.writeFileSync('notes.json', JSON.stringify(notes, null, 2));
+  const formDataResponse = `
+  Content-Disposition: form-data; name=${note_name}
+  Content-Disposition: form-data; name=${note}
+  `;
+  res.set({
+  'Content-Type': `multipart/form-data; boundary=boundary`,
+  'Content-Length': Buffer.from(formDataResponse, 'utf-8').length
+  });
+  res.status(201).send(formDataResponse);
+});
     
 app.get('/notes/:noteName', (req, res) => {
   const noteName = req.params.noteName;
